@@ -1,6 +1,6 @@
 package com.codecool.networking.modes;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -42,6 +42,26 @@ public class Server implements Runnable {
             }
         }
         System.out.println("Server Stopped.");
+    }
+
+    private void processClientRequest(Socket clientSocket) throws Exception {
+
+        try (
+            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in))
+        ) {
+            StringBuilder stringBuilder = new StringBuilder();
+            while (in.readLine() != null) {
+                stringBuilder.append(in.readLine());
+            }
+            String clientInput = stringBuilder.toString();
+
+            if (clientInput.equals("Hello")) {
+                out.println("Hey from server!");
+                out.flush();
+            }
+        }
     }
 
     private synchronized boolean isStopped() {
