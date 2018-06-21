@@ -1,5 +1,6 @@
 package com.codecool.networking.modes;
 
+import java.io.IOException;
 import java.net.ServerSocket;
 
 public class Server implements Runnable {
@@ -18,6 +19,18 @@ public class Server implements Runnable {
 
         synchronized (this) {
             this.runningThread = Thread.currentThread();
+        }
+
+        openServerSocket();
+
+        
+    }
+
+    private void openServerSocket() {
+        try {
+            this.serverSocket = new ServerSocket(this.serverPort);
+        } catch (IOException e) {
+            throw new RuntimeException("Cannot open port " + serverPort, e);
         }
     }
 }
