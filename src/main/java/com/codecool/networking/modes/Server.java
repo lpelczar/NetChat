@@ -11,7 +11,7 @@ public class Server implements Runnable {
     private boolean isStopped;
     private Thread runningThread;
 
-    Server(int port) {
+    public Server(int port) {
         this.serverPort = port;
     }
 
