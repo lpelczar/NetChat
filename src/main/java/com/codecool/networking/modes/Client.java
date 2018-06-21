@@ -1,16 +1,16 @@
 package com.codecool.networking.modes;
 
-import java.io.IOException;
+import com.codecool.networking.data.Message;
+
+import java.io.*;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class Client implements Runnable {
 
     private int serverPort;
     private String serverHost;
-    private Socket socket;
     private boolean isStopped;
-    private Thread runningThread;
-
 
     public Client(String host, int port) {
         this.serverHost = host;
@@ -20,41 +20,43 @@ public class Client implements Runnable {
     @Override
     public void run() {
 
-        synchronized (this) {
-            this.runningThread = Thread.currentThread();
-        }
-
-        openClientSocket();
-
         while (!isStopped()) {
 
+            Socket socket;
             try {
-                processSendingMessage();
+                socket = new Socket(serverHost, serverPort);
+            } catch (IOException e) {
+                if (isStopped()) {
+                    System.out.println("Client Stopped.") ;
+                    return;
+                }
+                throw new RuntimeException("Error connecting to server", e);
+            }
+
+            try {
+                processSendingMessage(socket);
             } catch (Exception e) {
                 System.out.println("Error sending message!");
             }
         }
-        System.out.println("Server Stopped.");
+        System.out.println("Client Stopped.");
+    }
+
+    private void processSendingMessage(Socket socket) {
+
+        try (ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream());
+             ObjectInputStream is = new ObjectInputStream(socket.getInputStream())) {
+
+            System.out.print("Enter message to send: ");
+            String messageString = new Scanner(System.in).nextLine();
+            Message message = new Message(messageString, "Sample");
+            os.writeObject(message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private synchronized boolean isStopped() {
         return this.isStopped;
-    }
-
-    public synchronized void stop(){
-        this.isStopped = true;
-        try {
-            this.socket.close();
-        } catch (IOException e) {
-            throw new RuntimeException("Error closing client", e);
-        }
-    }
-
-    private void openClientSocket() {
-        try {
-            this.socket = new Socket(serverHost, serverPort);
-        } catch (IOException e) {
-            throw new RuntimeException("Cannot open socket on host: " + serverHost + " and port: " + serverPort, e);
-        }
     }
 }

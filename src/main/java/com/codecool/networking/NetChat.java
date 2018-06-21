@@ -4,8 +4,6 @@ import com.codecool.networking.modes.Client;
 import com.codecool.networking.modes.Server;
 import com.codecool.networking.utils.IntegerChecker;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 
 public class NetChat {
 

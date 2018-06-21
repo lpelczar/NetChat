@@ -1,15 +1,17 @@
 package com.codecool.networking.modes;
 
+import com.codecool.networking.data.Message;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class Server implements Runnable {
 
     private int serverPort;
     private ServerSocket serverSocket;
     private boolean isStopped;
-    private Thread runningThread;
 
     public Server(int port) {
         this.serverPort = port;
@@ -17,11 +19,6 @@ public class Server implements Runnable {
 
     @Override
     public void run() {
-
-        synchronized (this) {
-            this.runningThread = Thread.currentThread();
-        }
-
         openServerSocket();
 
         while (!isStopped()) {
@@ -47,20 +44,12 @@ public class Server implements Runnable {
     private void processClientRequest(Socket clientSocket) throws Exception {
 
         try (
-            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in))
+            ObjectOutputStream os = new ObjectOutputStream(clientSocket.getOutputStream());
+            ObjectInputStream is = new ObjectInputStream(clientSocket.getInputStream());
+            Scanner scanner = new Scanner(System.in)
         ) {
-            StringBuilder stringBuilder = new StringBuilder();
-            while (in.readLine() != null) {
-                stringBuilder.append(in.readLine());
-            }
-            String clientInput = stringBuilder.toString();
-
-            if (clientInput.equals("Hello")) {
-                out.println("Hey from server!");
-                out.flush();
-            }
+            Message message = (Message) is.readObject();
+            System.out.println(message);
         }
     }
 
