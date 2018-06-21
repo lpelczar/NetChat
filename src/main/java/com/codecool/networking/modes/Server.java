@@ -12,6 +12,8 @@ public class Server implements Runnable {
     private int serverPort;
     private ServerSocket serverSocket;
     private boolean isStopped;
+    private String name;
+    private boolean isClientConnected;
 
     public Server(int port) {
         this.serverPort = port;
@@ -21,10 +23,17 @@ public class Server implements Runnable {
     public void run() {
         openServerSocket();
 
+        System.out.print("* What's your name: ");
+        name = new Scanner(System.in).nextLine();
+        System.out.println();
+
+        System.out.println("* Waiting for a client on port " + serverPort + "...");
+
         while (!isStopped()) {
             Socket clientSocket;
             try {
                 clientSocket = this.serverSocket.accept();
+                printMessageThatClientHasConnected();
             } catch (IOException e) {
                 if (isStopped()) {
                     System.out.println("Server Stopped.") ;
@@ -39,6 +48,13 @@ public class Server implements Runnable {
             }
         }
         System.out.println("Server Stopped.");
+    }
+
+    private void printMessageThatClientHasConnected() {
+        if (!isClientConnected) {
+            System.out.println("* Client connected! Chat starts...");
+            isClientConnected = true;
+        }
     }
 
     private void processClientRequest(Socket clientSocket) throws Exception {
