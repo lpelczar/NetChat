@@ -4,6 +4,9 @@ import com.codecool.networking.modes.Client;
 import com.codecool.networking.modes.Server;
 import com.codecool.networking.utils.IntegerChecker;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 public class NetChat {
 
     public static void main(String[] args) {
@@ -62,9 +65,15 @@ public class NetChat {
             return;
         }
 
-        String address = args[1];
+        URL address;
+        try {
+            address = new URL(args[1]);
+        } catch (MalformedURLException e) {
+            printConsoleArgumentsInformation();
+            return;
+        }
 
-        Client client = new Client(address, port);
+        Client client = new Client(address, Integer.parseInt(port));
         new Thread(client).start();
     }
 }
