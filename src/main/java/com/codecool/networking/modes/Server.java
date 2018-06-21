@@ -2,6 +2,7 @@ package com.codecool.networking.modes;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 
 public class Server implements Runnable {
 
@@ -23,7 +24,25 @@ public class Server implements Runnable {
 
         openServerSocket();
 
-        
+        while(!isStopped()){
+            Socket clientSocket = null;
+            try {
+                clientSocket = this.serverSocket.accept();
+            } catch (IOException e) {
+                if(isStopped()) {
+                    System.out.println("Server Stopped.") ;
+                    return;
+                }
+                throw new RuntimeException(
+                        "Error accepting client connection", e);
+            }
+                // TODO 1: create new worker thread
+        }
+        System.out.println("Server Stopped.") ;
+    }
+
+    private synchronized boolean isStopped() {
+        return this.isStopped;
     }
 
     private void openServerSocket() {
