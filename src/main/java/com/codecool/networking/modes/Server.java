@@ -16,5 +16,8 @@ public class Server implements Runnable {
     @Override
     public void run() {
 
+        synchronized (this) {
+            this.runningThread = Thread.currentThread();
+        }
     }
 }
