@@ -6,9 +6,9 @@ import java.net.Socket;
 
 public class Server implements Runnable {
 
-    private int serverPort = 9000;
+    private int serverPort;
     private ServerSocket serverSocket;
-    private boolean isStopped = false;
+    private boolean isStopped;
     private Thread runningThread;
 
     Server(int port) {

@@ -10,5 +10,16 @@ public class NetChat {
                     "\nport");
             return;
         }
+
+        switch (args[0]) {
+            case "server":
+                handleStartingServer(args);
+                break;
+            case "client":
+                handleStartingClient(args);
+                break;
+            default:
+                System.out.println("Invalid mode input: use 'server' or 'client'");
+        }
     }
 }
