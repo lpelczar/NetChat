@@ -24,12 +24,12 @@ public class Server implements Runnable {
 
         openServerSocket();
 
-        while(! isStopped()){
+        while (!isStopped()) {
             Socket clientSocket;
             try {
                 clientSocket = this.serverSocket.accept();
             } catch (IOException e) {
-                if(isStopped()) {
+                if (isStopped()) {
                     System.out.println("Server Stopped.") ;
                     return;
                 }

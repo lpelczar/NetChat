@@ -65,15 +65,9 @@ public class NetChat {
             return;
         }
 
-        URL address;
-        try {
-            address = new URL(args[1]);
-        } catch (MalformedURLException e) {
-            printConsoleArgumentsInformation();
-            return;
-        }
+        String host = args[1];
 
-        Client client = new Client(address, Integer.parseInt(port));
+        Client client = new Client(host, Integer.parseInt(port));
         new Thread(client).start();
     }
 }
