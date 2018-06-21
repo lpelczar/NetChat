@@ -1,5 +1,6 @@
 package com.codecool.networking;
 
+import com.codecool.networking.modes.Client;
 import com.codecool.networking.modes.Server;
 import com.codecool.networking.utils.IntegerChecker;
 
@@ -46,5 +47,24 @@ public class NetChat {
 
         Server server = new Server(Integer.parseInt(port));
         new Thread(server).start();
+    }
+
+    private static void handleStartingClient(String[] args) {
+
+        if (args.length != 3) {
+            printConsoleArgumentsInformation();
+            return;
+        }
+
+        String port = args[2];
+        if (!IntegerChecker.isInteger(port)) {
+            printConsoleArgumentsInformation();
+            return;
+        }
+
+        String address = args[1];
+
+        Client client = new Client(address, port);
+        new Thread(client).start();
     }
 }
