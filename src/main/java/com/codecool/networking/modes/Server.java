@@ -68,8 +68,6 @@ public class Server implements Runnable {
 
             }
         }
-
-
     }
 
     private synchronized boolean isStopped() {

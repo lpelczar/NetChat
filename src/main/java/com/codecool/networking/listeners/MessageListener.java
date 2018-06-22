@@ -23,14 +23,14 @@ public class MessageListener implements Runnable {
                 Message receivedMessage = (Message) is.readObject();
                 System.out.println(receivedMessage.getAuthor() + "> " + receivedMessage.getContent());
             } catch (IOException | ClassNotFoundException e) {
-                // Ignore
+                stop();
             }
 
         }
 
     }
 
-    private synchronized boolean isStopped() {
+    public synchronized boolean isStopped() {
         return this.isStopped;
     }
 

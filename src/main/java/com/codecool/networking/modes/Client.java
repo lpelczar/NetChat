@@ -34,19 +34,19 @@ public class Client implements Runnable {
                 System.out.println("* Connected to " + serverHost + ":" + serverPort + "!");
             } catch (IOException e) {
                 if (isStopped()) {
-                    System.out.println("Client Stopped.") ;
+                    System.out.println("* Bye bye!") ;
                     return;
                 }
-                throw new RuntimeException("Error connecting to server", e);
+                throw new RuntimeException("* Error connecting to server", e);
             }
 
             try {
                 processSendingMessage(socket);
             } catch (Exception e) {
-                System.out.println("Error sending message!");
+                System.out.println("* Error sending message!");
             }
         }
-        System.out.println("Client Stopped.");
+        System.out.println("* Bye bye!");
     }
 
     private void processSendingMessage(Socket socket) throws Exception {
@@ -58,17 +58,26 @@ public class Client implements Runnable {
 
             System.out.println("* Type your message:");
 
-            while (true) {
+            String messageString = "";
 
-                String messageString = new Scanner(System.in).nextLine();
-                Message message = new Message(messageString, name);
-                os.writeObject(message);
+            while (!messageString.equals(".quit!")) {
 
+                messageString = new Scanner(System.in).nextLine();
+                if (!messageString.equals(".quit!")) {
+                    Message message = new Message(messageString, name);
+                    os.writeObject(message);
+                }
             }
+
+            stop();
         }
     }
 
     private synchronized boolean isStopped() {
         return this.isStopped;
+    }
+
+    public synchronized void stop(){
+        this.isStopped = true;
     }
 }
