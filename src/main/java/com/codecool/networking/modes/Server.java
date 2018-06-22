@@ -1,6 +1,5 @@
 package com.codecool.networking.modes;
 
-import com.codecool.networking.data.Message;
 import com.codecool.networking.runnables.MessageListener;
 import com.codecool.networking.runnables.MessageSender;
 
@@ -59,7 +58,7 @@ public class Server implements Runnable {
         MessageSender messageSender = new MessageSender(new ObjectOutputStream(clientSocket.getOutputStream()), name);
         new Thread(messageSender).start();
 
-        while (true) {
+        while (!isStopped()) {
             if (messageListener.isStopped() || messageSender.isStopped()) {
                 throw new InterruptedException("Client has disconnected!");
             }
@@ -68,15 +67,6 @@ public class Server implements Runnable {
 
     private synchronized boolean isStopped() {
         return this.isStopped;
-    }
-
-    public synchronized void stop(){
-        this.isStopped = true;
-        try {
-            this.serverSocket.close();
-        } catch (IOException e) {
-            throw new RuntimeException("Error closing server", e);
-        }
     }
 
     private void openServerSocket() {
