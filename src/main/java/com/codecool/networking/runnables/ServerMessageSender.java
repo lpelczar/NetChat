@@ -3,7 +3,6 @@ package com.codecool.networking.runnables;
 import com.codecool.networking.data.Message;
 
 import java.io.*;
-import java.util.Scanner;
 
 public class ServerMessageSender implements Runnable {
 
