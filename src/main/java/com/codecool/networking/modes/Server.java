@@ -1,7 +1,8 @@
 package com.codecool.networking.modes;
 
 import com.codecool.networking.data.Message;
-import com.codecool.networking.listeners.MessageListener;
+import com.codecool.networking.runnables.MessageListener;
+import com.codecool.networking.runnables.MessageSender;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -52,20 +53,15 @@ public class Server implements Runnable {
 
     private void processClientRequest(Socket clientSocket) throws Exception {
 
-        try (ObjectOutputStream os = new ObjectOutputStream(clientSocket.getOutputStream())) {
+        MessageListener messageListener = new MessageListener(new ObjectInputStream(clientSocket.getInputStream()));
+        new Thread(messageListener).start();
 
-            MessageListener messageListener = new MessageListener(new ObjectInputStream(clientSocket.getInputStream()));
-            new Thread(messageListener).start();
+        MessageSender messageSender = new MessageSender(new ObjectOutputStream(clientSocket.getOutputStream()), name);
+        new Thread(messageSender).start();
 
-            System.out.println("* Type your message:");
-
-            while (true) {
-
-                String messageString = new Scanner(System.in).nextLine();
-                Message message = new Message(messageString, name);
-                System.out.println("you> " + messageString);
-                os.writeObject(message);
-
+        while (true) {
+            if (messageListener.isStopped() || messageSender.isStopped()) {
+                throw new InterruptedException("Client has disconnected!");
             }
         }
     }
