@@ -2,8 +2,7 @@ package com.codecool.networking.runnables;
 
 import com.codecool.networking.data.Message;
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.Scanner;
 
 public class ServerMessageSender implements Runnable {
@@ -23,16 +22,28 @@ public class ServerMessageSender implements Runnable {
         System.out.println("* Type your message:");
 
         while (!isStopped()) {
-
             try {
-                String messageString = new Scanner(System.in).nextLine();
-                Message message = new Message(messageString, name);
-                System.out.println("you> " + messageString);
-                os.writeObject(message);
-            } catch (IOException e) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+                String input;
+                try {
+
+                    do {
+                        while (!br.ready()) {
+                            Thread.sleep(200);
+                        }
+                        input = br.readLine();
+                    } while ("".equals(input));
+
+                    Message message = new Message(input, name);
+                    System.out.println("you> " + input);
+                    os.writeObject(message);
+
+                } catch (IOException e) {
+                    stop();
+                }
+            } catch (InterruptedException e) {
                 stop();
             }
-
         }
     }
 
@@ -40,7 +51,7 @@ public class ServerMessageSender implements Runnable {
         return this.isStopped;
     }
 
-    public synchronized void stop(){
+    public synchronized void stop() {
         this.isStopped = true;
     }
 }

@@ -58,12 +58,13 @@ public class Server implements Runnable {
 
         ObjectOutputStream os = new ObjectOutputStream(clientSocket.getOutputStream());
         ServerMessageSender serverMessageSender = new ServerMessageSender(os, name);
-        new Thread(serverMessageSender).start();
+        Thread senderThread = new Thread(serverMessageSender);
+        senderThread.start();
 
         while (!isStopped()) {
             if (messageListener.isStopped() || serverMessageSender.isStopped()) {
                 messageListener.stop();
-                serverMessageSender.stop();
+                senderThread.interrupt();
                 throw new InterruptedException("Client has disconnected!");
             }
         }
