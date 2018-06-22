@@ -74,6 +74,10 @@ public class Server implements Runnable {
         return this.isStopped;
     }
 
+    public synchronized void stop(){
+        this.isStopped = true;
+    }
+
     private void openServerSocket() {
         try {
             this.serverSocket = new ServerSocket(this.serverPort);
