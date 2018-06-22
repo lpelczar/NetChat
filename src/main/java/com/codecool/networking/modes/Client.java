@@ -1,6 +1,7 @@
 package com.codecool.networking.modes;
 
 import com.codecool.networking.data.Message;
+import com.codecool.networking.listeners.MessageListener;
 
 import java.io.*;
 import java.net.Socket;
@@ -49,14 +50,15 @@ public class Client implements Runnable {
 
     private void processSendingMessage(Socket socket) throws Exception {
 
-        try (ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream());
-             ObjectInputStream is = new ObjectInputStream(socket.getInputStream())) {
+        try (ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream())) {
+
+            new Thread(new MessageListener(new ObjectInputStream(socket.getInputStream()))).start();
 
             while (true) {
 
                 System.out.print("Enter message to send: ");
                 String messageString = new Scanner(System.in).nextLine();
-                Message message = new Message(messageString, "Sample");
+                Message message = new Message(messageString, name);
                 os.writeObject(message);
 
             }

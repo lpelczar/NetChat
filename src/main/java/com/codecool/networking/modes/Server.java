@@ -1,6 +1,7 @@
 package com.codecool.networking.modes;
 
 import com.codecool.networking.data.Message;
+import com.codecool.networking.listeners.MessageListener;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -51,13 +52,18 @@ public class Server implements Runnable {
 
     private void processClientRequest(Socket clientSocket) throws Exception {
 
-        try (ObjectOutputStream os = new ObjectOutputStream(clientSocket.getOutputStream());
-             ObjectInputStream is = new ObjectInputStream(clientSocket.getInputStream())) {
+        try (ObjectOutputStream os = new ObjectOutputStream(clientSocket.getOutputStream())) {
+
+            new Thread(new MessageListener(new ObjectInputStream(clientSocket.getInputStream()))).start();
+
+            System.out.println("* Type your message:");
 
             while (true) {
 
-                Message message = (Message) is.readObject();
-                System.out.println(message);
+                String messageString = new Scanner(System.in).nextLine();
+                Message message = new Message(messageString, name);
+                System.out.println("you> " + messageString);
+                os.writeObject(message);
 
             }
         }
