@@ -52,14 +52,18 @@ public class Server implements Runnable {
 
     private void processClientRequest(Socket clientSocket) throws Exception {
 
-        MessageListener messageListener = new MessageListener(new ObjectInputStream(clientSocket.getInputStream()));
+        ObjectInputStream is = new ObjectInputStream(clientSocket.getInputStream());
+        MessageListener messageListener = new MessageListener(is);
         new Thread(messageListener).start();
 
-        ServerMessageSender serverMessageSender = new ServerMessageSender(new ObjectOutputStream(clientSocket.getOutputStream()), name);
+        ObjectOutputStream os = new ObjectOutputStream(clientSocket.getOutputStream());
+        ServerMessageSender serverMessageSender = new ServerMessageSender(os, name);
         new Thread(serverMessageSender).start();
 
         while (!isStopped()) {
             if (messageListener.isStopped() || serverMessageSender.isStopped()) {
+                messageListener.stop();
+                serverMessageSender.stop();
                 throw new InterruptedException("Client has disconnected!");
             }
         }

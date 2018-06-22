@@ -40,7 +40,7 @@ public class ServerMessageSender implements Runnable {
         return this.isStopped;
     }
 
-    private synchronized void stop(){
+    public synchronized void stop(){
         this.isStopped = true;
     }
 }
