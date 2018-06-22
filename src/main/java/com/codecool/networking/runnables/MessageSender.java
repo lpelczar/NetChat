@@ -13,6 +13,7 @@ public class MessageSender implements Runnable {
     private boolean isStopped;
 
     public MessageSender(ObjectOutputStream os, String name) {
+        this.name = name;
         this.os = os;
     }
 
