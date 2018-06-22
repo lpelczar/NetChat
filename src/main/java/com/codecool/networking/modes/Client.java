@@ -62,7 +62,13 @@ public class Client implements Runnable {
 
         while (!isStopped()) {
             if (messageSender.isStopped()) {
+                messageListener.stop();
                 stop();
+            }
+            if (messageListener.isStopped()) {
+                messageSender.stop();
+                stop();
+                System.out.println("Server has disconnected!");
             }
         }
     }
