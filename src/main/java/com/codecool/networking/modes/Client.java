@@ -1,9 +1,7 @@
 package com.codecool.networking.modes;
 
-import com.codecool.networking.data.Message;
 import com.codecool.networking.runnables.ClientMessageSender;
 import com.codecool.networking.runnables.MessageListener;
-import com.codecool.networking.runnables.MessageSender;
 
 import java.io.*;
 import java.net.Socket;

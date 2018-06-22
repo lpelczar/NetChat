@@ -6,13 +6,13 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.Scanner;
 
-public class MessageSender implements Runnable {
+public class ServerMessageSender implements Runnable {
 
     private String name;
     private ObjectOutputStream os;
     private boolean isStopped;
 
-    public MessageSender(ObjectOutputStream os, String name) {
+    public ServerMessageSender(ObjectOutputStream os, String name) {
         this.name = name;
         this.os = os;
     }

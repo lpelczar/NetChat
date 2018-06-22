@@ -1,7 +1,7 @@
 package com.codecool.networking.modes;
 
 import com.codecool.networking.runnables.MessageListener;
-import com.codecool.networking.runnables.MessageSender;
+import com.codecool.networking.runnables.ServerMessageSender;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -55,11 +55,11 @@ public class Server implements Runnable {
         MessageListener messageListener = new MessageListener(new ObjectInputStream(clientSocket.getInputStream()));
         new Thread(messageListener).start();
 
-        MessageSender messageSender = new MessageSender(new ObjectOutputStream(clientSocket.getOutputStream()), name);
-        new Thread(messageSender).start();
+        ServerMessageSender serverMessageSender = new ServerMessageSender(new ObjectOutputStream(clientSocket.getOutputStream()), name);
+        new Thread(serverMessageSender).start();
 
         while (!isStopped()) {
-            if (messageListener.isStopped() || messageSender.isStopped()) {
+            if (messageListener.isStopped() || serverMessageSender.isStopped()) {
                 throw new InterruptedException("Client has disconnected!");
             }
         }
