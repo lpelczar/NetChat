@@ -31,6 +31,7 @@ public class Client implements Runnable {
             Socket socket;
             try {
                 socket = new Socket(serverHost, serverPort);
+                System.out.println("* Connected to " + serverHost + ":" + serverPort + "!");
             } catch (IOException e) {
                 if (isStopped()) {
                     System.out.println("Client Stopped.") ;
@@ -52,11 +53,13 @@ public class Client implements Runnable {
 
         try (ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream())) {
 
-            new Thread(new MessageListener(new ObjectInputStream(socket.getInputStream()))).start();
+            MessageListener messageListener = new MessageListener(new ObjectInputStream(socket.getInputStream()));
+            new Thread(messageListener).start();
+
+            System.out.println("* Type your message:");
 
             while (true) {
 
-                System.out.print("Enter message to send: ");
                 String messageString = new Scanner(System.in).nextLine();
                 Message message = new Message(messageString, name);
                 os.writeObject(message);

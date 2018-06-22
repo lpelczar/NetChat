@@ -54,7 +54,8 @@ public class Server implements Runnable {
 
         try (ObjectOutputStream os = new ObjectOutputStream(clientSocket.getOutputStream())) {
 
-            new Thread(new MessageListener(new ObjectInputStream(clientSocket.getInputStream()))).start();
+            MessageListener messageListener = new MessageListener(new ObjectInputStream(clientSocket.getInputStream()));
+            new Thread(messageListener).start();
 
             System.out.println("* Type your message:");
 
