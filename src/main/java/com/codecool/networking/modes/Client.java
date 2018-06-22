@@ -11,6 +11,7 @@ public class Client implements Runnable {
     private int serverPort;
     private String serverHost;
     private boolean isStopped;
+    private String name;
 
     public Client(String host, int port) {
         this.serverHost = host;
@@ -19,6 +20,10 @@ public class Client implements Runnable {
 
     @Override
     public void run() {
+
+        System.out.print("* What's your name: ");
+        name = new Scanner(System.in).nextLine();
+        System.out.println();
 
         while (!isStopped()) {
 
@@ -42,17 +47,19 @@ public class Client implements Runnable {
         System.out.println("Client Stopped.");
     }
 
-    private void processSendingMessage(Socket socket) {
+    private void processSendingMessage(Socket socket) throws Exception {
 
         try (ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream());
              ObjectInputStream is = new ObjectInputStream(socket.getInputStream())) {
 
-            System.out.print("Enter message to send: ");
-            String messageString = new Scanner(System.in).nextLine();
-            Message message = new Message(messageString, "Sample");
-            os.writeObject(message);
-        } catch (IOException e) {
-            e.printStackTrace();
+            while (true) {
+
+                System.out.print("Enter message to send: ");
+                String messageString = new Scanner(System.in).nextLine();
+                Message message = new Message(messageString, "Sample");
+                os.writeObject(message);
+
+            }
         }
     }
 

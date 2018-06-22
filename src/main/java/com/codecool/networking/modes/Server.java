@@ -13,7 +13,6 @@ public class Server implements Runnable {
     private ServerSocket serverSocket;
     private boolean isStopped;
     private String name;
-    private boolean isClientConnected;
 
     public Server(int port) {
         this.serverPort = port;
@@ -27,13 +26,13 @@ public class Server implements Runnable {
         name = new Scanner(System.in).nextLine();
         System.out.println();
 
-        System.out.println("* Waiting for a client on port " + serverPort + "...");
-
         while (!isStopped()) {
+            System.out.println("* Waiting for a client on port " + serverPort + "...");
+
             Socket clientSocket;
             try {
                 clientSocket = this.serverSocket.accept();
-                printMessageThatClientHasConnected();
+                System.out.println("* Client connected! Chat starts...");
             } catch (IOException e) {
                 if (isStopped()) {
                     System.out.println("Server Stopped.") ;
@@ -44,29 +43,26 @@ public class Server implements Runnable {
             try {
                 processClientRequest(clientSocket);
             } catch (Exception e) {
-                System.out.println("Error processing client!");
+                System.out.println("\nClient has disconnected!");
             }
         }
         System.out.println("Server Stopped.");
     }
 
-    private void printMessageThatClientHasConnected() {
-        if (!isClientConnected) {
-            System.out.println("* Client connected! Chat starts...");
-            isClientConnected = true;
-        }
-    }
-
     private void processClientRequest(Socket clientSocket) throws Exception {
 
-        try (
-            ObjectOutputStream os = new ObjectOutputStream(clientSocket.getOutputStream());
-            ObjectInputStream is = new ObjectInputStream(clientSocket.getInputStream());
-            Scanner scanner = new Scanner(System.in)
-        ) {
-            Message message = (Message) is.readObject();
-            System.out.println(message);
+        try (ObjectOutputStream os = new ObjectOutputStream(clientSocket.getOutputStream());
+             ObjectInputStream is = new ObjectInputStream(clientSocket.getInputStream())) {
+
+            while (true) {
+
+                Message message = (Message) is.readObject();
+                System.out.println(message);
+
+            }
         }
+
+
     }
 
     private synchronized boolean isStopped() {
