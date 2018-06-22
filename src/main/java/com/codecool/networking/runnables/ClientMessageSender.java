@@ -35,6 +35,7 @@ public class ClientMessageSender implements Runnable {
                     }
                 }
             }
+            stop();
         }
     }
 

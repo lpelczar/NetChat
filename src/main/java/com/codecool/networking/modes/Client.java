@@ -1,7 +1,9 @@
 package com.codecool.networking.modes;
 
 import com.codecool.networking.data.Message;
+import com.codecool.networking.runnables.ClientMessageSender;
 import com.codecool.networking.runnables.MessageListener;
+import com.codecool.networking.runnables.MessageSender;
 
 import java.io.*;
 import java.net.Socket;
@@ -47,29 +49,23 @@ public class Client implements Runnable {
             }
         }
         System.out.println("* Bye bye!");
+        System.exit(0);
     }
 
     private void processSendingMessage(Socket socket) throws Exception {
 
-        try (ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream())) {
+        ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream());
+        ClientMessageSender messageSender = new ClientMessageSender(os, name);
+        new Thread(messageSender).start();
 
-            MessageListener messageListener = new MessageListener(new ObjectInputStream(socket.getInputStream()));
-            new Thread(messageListener).start();
+        ObjectInputStream is = new ObjectInputStream(socket.getInputStream());
+        MessageListener messageListener = new MessageListener(is);
+        new Thread(messageListener).start();
 
-            System.out.println("* Type your message:");
-
-            String messageString = "";
-
-            while (!messageString.equals(".quit!")) {
-
-                messageString = new Scanner(System.in).nextLine();
-                if (!messageString.equals(".quit!")) {
-                    Message message = new Message(messageString, name);
-                    os.writeObject(message);
-                }
+        while (!isStopped()) {
+            if (messageSender.isStopped()) {
+                stop();
             }
-
-            stop();
         }
     }
 
